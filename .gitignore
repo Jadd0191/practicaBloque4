@@ -1,0 +1,37 @@
+# ============================================
+# ARCHIVOS IGNORADOS PARA PROYECTO JAVA/MAVEN
+# ============================================
+
+# Directorio de compilación de Maven
+/target/
+/target/*
+!/.mvn/wrapper/maven-wrapper.jar
+
+# Archivos de configuración de IDE
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+.vscode/
+*.swp
+*.swo
+
+# Archivos de logs
+*.log
+
+# Base de datos H2 (intermedio)
+/data/
+*.mv.db
+*.trace.db
+
+# Archivos de salida del CSV (básico)
+/output/
+*.csv
+
+# Archivos del sistema operativo
+Thumbs.db
+.DS_Store
+
+# Archivos de cobertura de tests
+*.jacoco
