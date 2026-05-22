@@ -3,11 +3,11 @@ package com.axity.dinosaurpark.model;
 import java.time.LocalDateTime;
 
 public record SatisfactionSurvey(
-    long id,                    // Identificador único de la encuesta
-    int touristId,              // ID del turista que respondió
-    String enclosureName,       // Nombre del encierro visitado
-    int score,                  // Puntuación (1 a 5, donde 5 es excelente)
-    LocalDateTime respondedAt   // Fecha y hora de la respuesta
+    long id,
+    int touristId,
+    String enclosureName,
+    int score,
+    LocalDateTime respondedAt
 ) {
     
     public SatisfactionSurvey {
