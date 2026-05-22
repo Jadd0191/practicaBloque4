@@ -1,5 +1,7 @@
 package com.axity.dinosaurpark.model;
 
+import com.axity.dinosaurpark.zone.PowerPlant;
+
 public class Technician extends Worker {
     public Technician(int id, String name, double dailySalary) {
         super(id, name, dailySalary);
@@ -14,7 +16,7 @@ public class Technician extends Worker {
      * Repara la planta de energía si no está operacional.
      * @param plant La planta de energía (se pasa como parámetro por ahora)
      */
-    /*public void repairIfNeeded(PowerPlant plant) {
+    public void repairIfNeeded(PowerPlant plant) {
         if (plant == null) {
             return;
         }
@@ -22,5 +24,5 @@ public class Technician extends Worker {
         if (!plant.isOperational()) {
             plant.repair();
         }
-    }*/
+    }
 }
