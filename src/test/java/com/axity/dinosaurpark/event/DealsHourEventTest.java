@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.axity.dinosaurpark.model.Dinosaur;
 import com.axity.dinosaurpark.model.Tourist;
-import com.axity.dinosaurpark.model.TouristStatus;
 import com.axity.dinosaurpark.model.Vehicle;
 import com.axity.dinosaurpark.model.Worker;
 import com.axity.dinosaurpark.simulation.ParkState;
@@ -22,23 +22,16 @@ import com.axity.dinosaurpark.zone.ExperienceType;
 import com.axity.dinosaurpark.zone.ObservationEnclosure;
 import com.axity.dinosaurpark.zone.PowerPlant;
 
-public class StormEventTest {
+public class DealsHourEventTest {
     
-    private StormEvent event;
-    private List<Tourist> tourists;
+    private DealsHourEvent event;
     private ParkState state;
     
     @BeforeEach
     void setUp() {
-        event = new StormEvent(0.04);
-        tourists = new ArrayList<>();
-        tourists.add(new Tourist(1, "Juan"));
-        tourists.add(new Tourist(2, "Maria"));
+        event = new DealsHourEvent(0.08);
         
-        for (Tourist t : tourists) {
-            t.setStatus(TouristStatus.IN_PARK);
-        }
-        
+        List<Tourist> tourists = new ArrayList<>();
         List<Dinosaur> dinosaurs = new ArrayList<>();
         List<Worker> workers = new ArrayList<>();
         List<Vehicle> vehicles = new ArrayList<>();
@@ -56,29 +49,22 @@ public class StormEventTest {
     
     @Test
     void testGetName() {
-        assertEquals("TORMENTA_TORRENCIAL", event.getName());
+        assertEquals("HORA_DE_OFERTAS", event.getName());
     }
     
     @Test
     void testGetProbability() {
-        assertEquals(0.04, event.getProbability());
+        assertEquals(0.08, event.getProbability());
     }
     
     @Test
     void testExecute() {
+        assertFalse(state.isDealsHourActive());
+        assertEquals(0.0, state.getCurrentDiscount());
+        
         event.execute(state, new Random());
         
-        for (Tourist t : tourists) {
-            boolean hasEvacuation = t.getVisitedZones().stream()
-                .anyMatch(z -> z.contains("Evacuación"));
-            assertTrue(hasEvacuation);
-        }
-    }
-    
-    @Test
-    void testToRecord() {
-        var record = event.toRecord(3);
-        assertEquals(3, record.step());
-        assertEquals("TORMENTA_TORRENCIAL", record.eventName());
+        assertTrue(state.isDealsHourActive());
+        assertEquals(0.30, state.getCurrentDiscount());
     }
 }

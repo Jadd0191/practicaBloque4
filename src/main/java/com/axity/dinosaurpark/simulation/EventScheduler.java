@@ -23,9 +23,9 @@ public class EventScheduler {
         
         // Crear los 3 eventos
         List<SimulationEvent> events = Arrays.asList(
-            new DinosaurEscapeEvent(),
-            new BlackoutEvent(),
-            new StormEvent()
+            new DinosaurEscapeEvent(0.05),
+            new BlackoutEvent(0.03),
+            new StormEvent(0.04)
         );
         
         // Programar cada evento en un step aleatorio

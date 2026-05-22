@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +14,8 @@ import com.axity.dinosaurpark.model.Dinosaur;
 import com.axity.dinosaurpark.model.DinosaurStatus;
 import com.axity.dinosaurpark.model.HerbivoreDinosaur;
 import com.axity.dinosaurpark.model.Tourist;
+import com.axity.dinosaurpark.model.Vehicle;
+import com.axity.dinosaurpark.model.Worker;
 import com.axity.dinosaurpark.simulation.ParkState;
 import com.axity.dinosaurpark.zone.ArrivalZone;
 import com.axity.dinosaurpark.zone.BathroomZone;
@@ -33,7 +34,7 @@ public class DinosaurEscapeEventTest {
     
     @BeforeEach
     void setUp() {
-        event = new DinosaurEscapeEvent();
+        event = new DinosaurEscapeEvent(0.05);
         dinosaurs = new ArrayList<>();
         dinosaurs.add(new CarnivoreDinosaur(1, "Rex", "T-Rex"));
         dinosaurs.add(new HerbivoreDinosaur(2, "Trici", "Triceratops"));
@@ -42,18 +43,20 @@ public class DinosaurEscapeEventTest {
         tourists.add(new Tourist(1, "Juan"));
         tourists.add(new Tourist(2, "Maria"));
         
-        rng = new Random(42);
+        List<Worker> workers = new ArrayList<>();
+        List<Vehicle> vehicles = new ArrayList<>();
         
-        // Crear un ParkState mínimo para pruebas
         state = new ParkState(
-            tourists, dinosaurs, new ArrayList<>(),
+            tourists, dinosaurs, workers, vehicles,
             new ArrivalZone(), new CentralHub(), new BathroomZone(),
-            new PowerPlant(), 
+            new PowerPlant(),
             new ObservationEnclosure("Basic", ExperienceType.BASIC),
             new ObservationEnclosure("Premium", ExperienceType.PREMIUM),
             new ObservationEnclosure("VIP", ExperienceType.VIP),
-            null, 42L
+            null, 0L
         );
+        
+        rng = new Random();
     }
     
     @Test
@@ -62,15 +65,14 @@ public class DinosaurEscapeEventTest {
     }
     
     @Test
-    void testGetDescription() {
-        assertNotNull(event.getDescription());
+    void testGetProbability() {
+        assertEquals(0.05, event.getProbability());
     }
     
     @Test
     void testExecute() {
         event.execute(state, rng);
         
-        // Algún dinosaurio debería estar escapado
         boolean algunEscapado = dinosaurs.stream()
             .anyMatch(d -> d.getStatus() == DinosaurStatus.ESCAPED);
         assertTrue(algunEscapado);
