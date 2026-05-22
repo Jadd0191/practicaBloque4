@@ -10,7 +10,7 @@ public class BlackoutEvent implements SimulationEvent {
     
     private final String name = "APAGON_MASIVO";
     private final String description = "Un apagón masivo ha afectado la planta de energía";
-    private String affectedEntities = "Planta de Energía";
+    private final String affectedEntities = "Planta de Energía";
     
     @Override
     public String getName() { return name; }
