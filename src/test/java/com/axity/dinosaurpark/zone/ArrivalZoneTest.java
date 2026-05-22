@@ -7,20 +7,16 @@ import org.junit.jupiter.api.Test;
 
 import com.axity.dinosaurpark.model.Tourist;
 import com.axity.dinosaurpark.model.TouristStatus;
-import com.axity.dinosaurpark.persistence.CsvWriter;
 
 public class ArrivalZoneTest {
     
     private ArrivalZone arrivalZone;
     private Tourist tourist;
-    private CsvWriter csvWriter;
     
     @BeforeEach
     void setUp() {
         arrivalZone = new ArrivalZone();
         tourist = new Tourist(1, "Test");
-        // Usar null para csvWriter en tests (no necesitamos guardar archivos)
-        csvWriter = null;
     }
     
     @Test
@@ -32,14 +28,22 @@ public class ArrivalZoneTest {
     @Test
     void testProcessBatch() {
         arrivalZone.addToQueue(tourist);
-        var arrived = arrivalZone.processBatch(1, csvWriter);
+        var arrived = arrivalZone.processBatch(1);
         assertEquals(1, arrived.size());
         assertEquals(TouristStatus.IN_PARK, tourist.getStatus());
     }
     
     @Test
+    void testProcessBatchWithDiscount() {
+        arrivalZone.addToQueue(tourist);
+        var arrived = arrivalZone.processBatch(1, 0.30);
+        assertEquals(1, arrived.size());
+        assertEquals(17.5, tourist.getMoneySpent()); // 25 * 0.70 = 17.5
+    }
+    
+    @Test
     void testProcessBatchWithNoTourists() {
-        var arrived = arrivalZone.processBatch(5, csvWriter);
+        var arrived = arrivalZone.processBatch(5);
         assertEquals(0, arrived.size());
     }
     

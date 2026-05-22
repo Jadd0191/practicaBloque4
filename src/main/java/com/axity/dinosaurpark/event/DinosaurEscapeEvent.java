@@ -1,18 +1,27 @@
 package com.axity.dinosaurpark.event;
 
-import com.axity.dinosaurpark.model.*;
-import com.axity.dinosaurpark.simulation.ParkState;
-import com.axity.dinosaurpark.persistence.EventRecord;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+
+import com.axity.dinosaurpark.model.Dinosaur;
+import com.axity.dinosaurpark.model.DinosaurStatus;
+import com.axity.dinosaurpark.model.Tourist;
+import com.axity.dinosaurpark.model.TouristStatus;
+import com.axity.dinosaurpark.persistence.EventRecord;
+import com.axity.dinosaurpark.simulation.ParkState;
 
 public class DinosaurEscapeEvent implements SimulationEvent {
     
     private final String name = "ESCAPE_DINOSAURIO";
     private final String description = "Un dinosaurio se ha escapado de su recinto";
     private String affectedEntities = "";
+    private double probability;
+    
+    public DinosaurEscapeEvent(double probability) {
+        this.probability = probability;
+    }
     
     @Override
     public String getName() { return name; }
@@ -21,42 +30,38 @@ public class DinosaurEscapeEvent implements SimulationEvent {
     public String getDescription() { return description; }
     
     @Override
+    public double getProbability() { return probability; }
+    
+    @Override
     public void execute(ParkState state, Random rng) {
-        // Obtener dinosaurios que están en el recinto
-        List<Dinosaur> enclosuredDinosaurs = state.getDinosaurs().stream()
+        List<Dinosaur> enclosured = state.getDinosaurs().stream()
             .filter(d -> d.getStatus() == DinosaurStatus.IN_ENCLOSURE)
             .collect(Collectors.toList());
         
-        if (enclosuredDinosaurs.isEmpty()) return;
+        if (enclosured.isEmpty()) return;
         
-        // Elegir un dinosaurio al azar
-        Dinosaur escaped = enclosuredDinosaurs.get(rng.nextInt(enclosuredDinosaurs.size()));
+        Dinosaur escaped = enclosured.get(rng.nextInt(enclosured.size()));
         escaped.escape();
-        affectedEntities = "Dinosaurio: " + escaped.getName() + " (" + escaped.getSpecies() + ")";
+        affectedEntities = "Dinosaurio: " + escaped.getName();
         
-        // Verificar ataque a turista
         if (rng.nextDouble() < escaped.getDangerLevel()) {
-            List<Tourist> activeTourists = state.getTourists().stream()
+            List<Tourist> active = state.getTourists().stream()
                 .filter(t -> t.getStatus() == TouristStatus.IN_PARK)
                 .collect(Collectors.toList());
-            
-            if (!activeTourists.isEmpty()) {
-                Tourist attacked = activeTourists.get(rng.nextInt(activeTourists.size()));
+            if (!active.isEmpty()) {
+                Tourist attacked = active.get(rng.nextInt(active.size()));
                 attacked.setStatus(TouristStatus.ATTACKED);
-                affectedEntities += " | Turista atacado: " + attacked.getName();
+                affectedEntities += " | Atacó a: " + attacked.getName();
             }
         }
         
-        // Registrar evento en CSV
-        if (state.getCsvWriter() != null) {
-            state.getCsvWriter().appendEvent(toRecord(state.getCurrentStep()));
+        if (state.getDb() != null) {
+            state.getDb().appendEvent(toRecord(state.getCurrentStep()));
         }
     }
     
     @Override
     public EventRecord toRecord(long step) {
-        return new EventRecord(
-            0, step, name, description, affectedEntities, LocalDateTime.now()
-        );
+        return new EventRecord(0, step, name, description, affectedEntities, LocalDateTime.now());
     }
 }

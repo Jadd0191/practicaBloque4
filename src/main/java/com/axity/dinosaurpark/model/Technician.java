@@ -1,8 +1,11 @@
 package com.axity.dinosaurpark.model;
 
+import java.util.List;
+
 import com.axity.dinosaurpark.zone.PowerPlant;
 
 public class Technician extends Worker {
+    
     public Technician(int id, String name, double dailySalary) {
         super(id, name, dailySalary);
     }
@@ -12,17 +15,26 @@ public class Technician extends Worker {
         return "TECHNICIAN";
     }
     
-    /**
-     * Repara la planta de energía si no está operacional.
-     * @param plant La planta de energía (se pasa como parámetro por ahora)
-     */
+    // Versión básica (sin vehículo) - para compatibilidad
     public void repairIfNeeded(PowerPlant plant) {
-        if (plant == null) {
-            return;
-        }
-        
-        if (!plant.isOperational()) {
+        if (plant != null && !plant.isOperational()) {
             plant.repair();
+        }
+    }
+    
+    // Versión intermedio (con vehículo)
+    public void repairIfNeeded(PowerPlant plant, List<Vehicle> vehicles) {
+        if (plant == null || plant.isOperational()) return;
+        
+        Vehicle availableVehicle = vehicles.stream()
+            .filter(Vehicle::isAvailable)
+            .findFirst()
+            .orElse(null);
+        
+        if (availableVehicle != null) {
+            availableVehicle.use();
+            plant.repair();
+            availableVehicle.free();
         }
     }
 }

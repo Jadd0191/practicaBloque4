@@ -1,18 +1,24 @@
 package com.axity.dinosaurpark.event;
 
-import com.axity.dinosaurpark.model.Tourist;
-import com.axity.dinosaurpark.model.TouristStatus;
-import com.axity.dinosaurpark.simulation.ParkState;
-import com.axity.dinosaurpark.persistence.EventRecord;
-import com.axity.dinosaurpark.persistence.ExpenseRecord;
 import java.time.LocalDateTime;
 import java.util.Random;
+
+import com.axity.dinosaurpark.model.Tourist;
+import com.axity.dinosaurpark.model.TouristStatus;
+import com.axity.dinosaurpark.persistence.EventRecord;
+import com.axity.dinosaurpark.persistence.ExpenseRecord;
+import com.axity.dinosaurpark.simulation.ParkState;
 
 public class StormEvent implements SimulationEvent {
     
     private final String name = "TORMENTA_TORRENCIAL";
     private final String description = "Una tormenta torrencial obliga a evacuar zonas";
     private String affectedEntities = "";
+    private double probability;
+    
+    public StormEvent(double probability) {
+        this.probability = probability;
+    }
     
     @Override
     public String getName() { return name; }
@@ -21,34 +27,32 @@ public class StormEvent implements SimulationEvent {
     public String getDescription() { return description; }
     
     @Override
+    public double getProbability() { return probability; }
+    
+    @Override
     public void execute(ParkState state, Random rng) {
-        int evacuatedCount = 0;
-        
-        for (Tourist tourist : state.getTourists()) {
-            if (tourist.getStatus() == TouristStatus.IN_PARK) {
-                tourist.recordVisit("Evacuación por tormenta");
-                evacuatedCount++;
+        int evacuated = 0;
+        for (Tourist t : state.getTourists()) {
+            if (t.getStatus() == TouristStatus.IN_PARK) {
+                t.recordVisit("Evacuación por tormenta");
+                evacuated++;
             }
         }
+        affectedEntities = evacuated + " turistas evacuados";
         
-        affectedEntities = evacuatedCount + " turistas evacuados";
-        
-        // Registrar gasto de $500
-        if (state.getCsvWriter() != null) {
+        if (state.getDb() != null) {
             ExpenseRecord expense = new ExpenseRecord(
                 0, "EMERGENCY", 500.0,
                 "Tormenta torrencial - gastos de evacuación",
                 LocalDateTime.now()
             );
-            state.getCsvWriter().appendExpense(expense);
-            state.getCsvWriter().appendEvent(toRecord(state.getCurrentStep()));
+            state.getDb().appendExpense(expense);
+            state.getDb().appendEvent(toRecord(state.getCurrentStep()));
         }
     }
     
     @Override
     public EventRecord toRecord(long step) {
-        return new EventRecord(
-            0, step, name, description, affectedEntities, LocalDateTime.now()
-        );
+        return new EventRecord(0, step, name, description, affectedEntities, LocalDateTime.now());
     }
 }

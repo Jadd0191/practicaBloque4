@@ -8,26 +8,23 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.axity.dinosaurpark.model.Tourist;
-import com.axity.dinosaurpark.persistence.CsvWriter;
 
 public class ObservationEnclosureTest {
     
     private ObservationEnclosure enclosure;
     private Tourist tourist;
     private Random rng;
-    private CsvWriter csvWriter;
     
     @BeforeEach
     void setUp() {
         enclosure = new ObservationEnclosure("Test Enclosure", ExperienceType.BASIC);
         tourist = new Tourist(1, "Test");
         rng = new Random(42);
-        csvWriter = null;
     }
     
     @Test
     void testVisit() {
-        enclosure.visit(tourist, rng, csvWriter);
+        enclosure.visit(tourist, rng);
         assertTrue(tourist.getMoneySpent() > 0);
         assertEquals(1, tourist.getVisitedZones().size());
     }
@@ -40,5 +37,10 @@ public class ObservationEnclosureTest {
     @Test
     void testGetEntryFee() {
         assertTrue(enclosure.getEntryFee() > 0);
+    }
+    
+    @Test
+    void testHasCapacity() {
+        assertTrue(enclosure.hasCapacity());
     }
 }
