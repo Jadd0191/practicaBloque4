@@ -29,28 +29,8 @@ Simulación de un parque temático de dinosaurios desarrollada en Java 17 como p
 ---
 
 ## 📦 Estructura del Proyecto
-dinosaur-park/
-├── pom.xml
-├── README.md
-├── src/
-│ ├── main/
-│ │ ├── java/com/axity/dinosaurpark/
-│ │ │ ├── config/ # ParkConfig (Singleton)
-│ │ │ ├── model/ # Tourist, Dinosaur, Worker, Vehicle
-│ │ │ ├── zone/ # ArrivalZone, CentralHub, etc.
-│ │ │ ├── event/ # SimulationEvent y eventos
-│ │ │ ├── persistence/ # CSV y DatabaseService
-│ │ │ ├── simulation/ # ParkState, SimulationEngine
-│ │ │ ├── monitoring/ # ParkMonitor
-│ │ │ └── Main.java
-│ │ └── resources/
-│ │ ├── park.properties
-│ │ └── db/changelog/ # Liquibase migrations
-│ └── test/
-│ └── java/ # Pruebas unitarias
 
-
----
+![Estructura del Proyecto](./docs/EP.png)
 
 ## 🚀 Instrucciones de Configuración
 
@@ -185,28 +165,7 @@ public class BlackoutEvent implements SimulationEvent { ... }
 public class StormEvent implements SimulationEvent { ... }
 
 # Diagrama de Clases
-┌─────────────────┐         ┌─────────────────────────────────────────┐
-│   <<Singleton>> │         │            <<Interface>>                │
-│   ParkConfig    │         │         SimulationEvent                  │
-├─────────────────┤         ├─────────────────────────────────────────┤
-│ -instance       │         │ +execute(state, rng)                     │
-│ -properties     │         │ +getName(): String                       │
-├─────────────────┤         │ +getDescription(): String                │
-│ +getInstance()  │         └─────────────────────────────────────────┘
-│ +getInt()       │                              △
-│ +getDouble()    │              ┌───────────────┴───────────────┐
-└─────────────────┘              │                               │
-                    ┌─────────────┴──────────┐     ┌─────────────┴──────────┐
-                    │  DinosaurEscapeEvent   │     │     BlackoutEvent      │
-                    ├────────────────────────┤     ├────────────────────────┤
-                    │ +execute()             │     │ +execute()             │
-                    └────────────────────────┘     └────────────────────────┘
-                    ┌─────────────┴──────────┐     ┌─────────────┴──────────┐
-                    │      StormEvent        │     │    DealsHourEvent      │
-                    ├────────────────────────┤     ├────────────────────────┤
-                    │ +execute()             │     │ +execute()             │
-                    └────────────────────────┘     └────────────────────────┘
-
+![Diagrama de Clases](./docs/DC.png)
 
 # 📈 Resultados de Pruebas
 **Cobertura de código**
@@ -234,17 +193,5 @@ output/expenses.csv - Gastos operativos
 output/events.csv - Eventos ocurridos
 
 # ✅ Checklist de Requisitos Cumplidos
-**Requisito	                Estado**
-Proyecto Maven	            ✅
-Java 17	                    ✅
-Patrón Singleton	        ✅
-Patrón Strategy	            ✅
-Persistencia en H2	        ✅
-Persistencia de ingresos	✅
-Persistencia de gastos	    ✅
-Persistencia de eventos	    ✅
-Tests JUnit	                ✅
-Cobertura ≥ 65%	            ✅ (86%)
-Control de versiones Git	✅
-README completo	            ✅
-Diagramas UML	            ✅
+
+![Checklist de Requisitos Cumplidos](./docs/CL.png)
